@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J.A.R.V.I.S.</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #02070b;
+    color: #00d9ff;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+.container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Hintergrund */
+.grid {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(rgba(0,217,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,217,255,.06) 1px, transparent 1px);
+    background-size: 45px 45px;
+    perspective: 500px;
+}
+
+/* Überschrift */
+.title {
+    position: absolute;
+    top: 35px;
+    text-align: center;
+    letter-spacing: 8px;
+    font-size: 30px;
+    text-shadow: 0 0 20px #00d9ff;
+}
+
+.status {
+    position: absolute;
+    top: 82px;
+    font-size: 13px;
+    color: #55eaff;
+}
+
+/* Reaktor */
+.reactor {
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    border: 4px solid #00d9ff;
+    box-shadow:
+        0 0 20px #00d9ff,
+        0 0 60px rgba(0,217,255,.7),
+        inset 0 0 35px rgba(0,217,255,.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: pulse 2s infinite alternate;
+}
+
+.reactor::before,
+.reactor::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid #00d9ff;
+}
+
+.reactor::before {
+    width: 190px;
+    height: 190px;
+    animation: rotate 8s linear infinite;
+}
+
+.reactor::after {
+    width: 130px;
+    height: 130px;
+    border-style: dashed;
+    animation: rotateReverse 5s linear infinite;
+}
+
+.core {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: #00d9ff;
+    box-shadow:
+        0 0 20px #00d9ff,
+        0 0 60px #00d9ff,
+        0 0 100px #00d9ff;
+    animation: corePulse 1.2s infinite alternate;
+}
+
+/* Chat */
+.chat {
+    position: absolute;
+    bottom: 100px;
+    width: min(700px, 90%);
+    min-height: 60px;
+    padding: 15px 20px;
+    border: 1px solid #00d9ff;
+    background: rgba(0,20,30,.75);
+    box-shadow: 0 0 20px rgba(0,217,255,.3);
+    text-align: center;
+    border-radius: 10px;
+}
+
+/* Buttons */
+.controls {
+    position: absolute;
+    bottom: 25px;
+    display: flex;
+    gap: 12px;
+}
+
+button {
+    background: rgba(0,30,45,.8);
+    color: #00d9ff;
+    border: 1px solid #00d9ff;
+    padding: 12px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+    box-shadow: 0 0 10px rgba(0,217,255,.3);
+}
+
+button:hover {
+    background: #00d9ff;
+    color: #001018;
+    box-shadow: 0 0 25px #00d9ff;
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.04); }
+}
+
+@keyframes corePulse {
+    from { transform: scale(.9); }
+    to { transform: scale(1.1); }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes rotateReverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="grid"></div>
+
+    <div class="title">J.A.R.V.I.S.</div>
+    <div class="status" id="status">SYSTEM ONLINE</div>
+
+    <div class="reactor">
+        <div class="core"></div>
+    </div>
+
+    <div class="chat" id="chat">
+        Guten Abend. Ich bin JARVIS. Drücke „Sprechen“ und rede mit mir.
+    </div>
+
+    <div class="controls">
+        <button onclick="startListening()">🎙️ Sprechen</button>
+        <button onclick="openYouTube()">▶ YouTube</button>
+        <button onclick="openGoogle()">🔎 Google</button>
+    </div>
+
+</div>
+
+<script>
+
+const chat = document.getElementById("chat");
+const statusText = document.getElementById("status");
+
+/* JARVIS spricht */
+function speak(text) {
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "de-DE";
+    speech.rate = 1;
+    speech.pitch = 0.9;
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(speech);
+}
+
+/* Antworten */
+function jarvisAnswer(text) {
+
+    text = text.toLowerCase();
+
+    if (text.includes("hallo") ||
+        text.includes("hi") ||
+        text.includes("hey")) {
+
+        return "Guten Abend. Wie kann ich Ihnen behilflich sein?";
+    }
+
+    if (text.includes("wie geht")) {
+        return "Alle Systeme funktionieren einwandfrei.";
+    }
+
+    if (text.includes("youtube")) {
+        window.open("https://www.youtube.com", "_blank");
+        return "YouTube wird geöffnet.";
+    }
+
+    if (text.includes("google")) {
+        window.open("https://www.google.com", "_blank");
+        return "Google wird geöffnet.";
+    }
+
+    if (text.includes("musik")) {
+        window.open("https://www.youtube.com/results?search_query=musik", "_blank");
+        return "Ich suche nach Musik.";
+    }
+
+    if (text.includes("zeit")) {
+        const now = new Date();
+        return "Es ist " +
+            now.getHours() + " Uhr " +
+            String(now.getMinutes()).padStart(2, "0") + ".";
+    }
+
+    if (text.includes("wer bist du")) {
+        return "Ich bin JARVIS, dein persönlicher KI-Assistent.";
+    }
+
+    return "Ich habe verstanden: " + text +
+           ". Für echte KI-Antworten benötigen wir als nächsten Schritt eine KI-Schnittstelle.";
+}
+
+/* Sprache erkennen */
+function startListening() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        chat.textContent =
+            "Dein Browser unterstützt leider keine Spracherkennung.";
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "de-DE";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    statusText.textContent = "LISTENING...";
+
+    recognition.start();
+
+    recognition.onresult = function(event) {
+
+        const text =
+            event.results[0][0].transcript;
+
+        chat.textContent = "Du: " + text;
+
+        const answer = jarvisAnswer(text);
+
+        setTimeout(() => {
+            chat.textContent = "JARVIS: " + answer;
+            speak(answer);
+        }, 300);
+    };
+
+    recognition.onerror = function() {
+        statusText.textContent = "SYSTEM ONLINE";
+        chat.textContent =
+            "Ich konnte dich nicht verstehen. Versuche es erneut.";
+    };
+
+    recognition.onend = function() {
+        statusText.textContent = "SYSTEM ONLINE";
+    };
+}
+
+function openYouTube() {
+    window.open("https://www.youtube.com", "_blank");
+}
+
+function openGoogle() {
+    window.open("https://www.google.com", "_blank");
+}
+
+</script>
+
+</body>
+</html>
